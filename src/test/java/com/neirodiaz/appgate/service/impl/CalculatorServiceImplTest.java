@@ -2,9 +2,11 @@ package com.neirodiaz.appgate.service.impl;
 
 import com.neirodiaz.appgate.exception.BacklogNotFoundException;
 import com.neirodiaz.appgate.exception.CalculatorException;
+import com.neirodiaz.appgate.model.Audit;
 import com.neirodiaz.appgate.model.Backlog;
 import com.neirodiaz.appgate.model.SessionData;
 import com.neirodiaz.appgate.model.type.Action;
+import com.neirodiaz.appgate.repository.AuditRepository;
 import com.neirodiaz.appgate.repository.BacklogRepository;
 import com.neirodiaz.appgate.repository.SessionDataRepository;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
@@ -26,6 +29,9 @@ import static org.mockito.Mockito.doReturn;
 class CalculatorServiceImplTest {
 
     @Mock
+    private AuditRepository repository;
+
+    @Mock
     private SessionDataRepository sessionRepository;
 
     @Mock
@@ -38,6 +44,7 @@ class CalculatorServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         String id = UUID.randomUUID().toString();
+        Audit auditar = Audit.builder().build();
         Optional<SessionData> optionalSession = Optional.of(SessionData.builder()
                 .id(id)
                 .created(LocalDateTime.now())
@@ -45,6 +52,7 @@ class CalculatorServiceImplTest {
                 .build());
 
         doReturn(optionalSession).when(sessionRepository).findById(id);
+        doReturn(auditar).when(repository).save(Mockito.any());
         localSession = optionalSession.get();
     }
 
@@ -61,6 +69,8 @@ class CalculatorServiceImplTest {
             esperado += i;
         }
         doReturn(backlogList).when(backlogRepository).findAllBySession(localSession);
+
+
         Double resultado = service.calculate(localSession.getId(), Action.suma.toString());
 
         Assertions.assertEquals(esperado, resultado);

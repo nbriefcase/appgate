@@ -8,6 +8,7 @@ import com.neirodiaz.appgate.model.SessionData;
 import com.neirodiaz.appgate.model.type.Action;
 import com.neirodiaz.appgate.repository.BacklogRepository;
 import com.neirodiaz.appgate.repository.SessionDataRepository;
+import com.neirodiaz.appgate.service.BaseService;
 import com.neirodiaz.appgate.service.CalculatorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
-public class CalculatorServiceImpl implements CalculatorService {
+public class CalculatorServiceImpl extends BaseService implements CalculatorService {
 
     @Autowired
     private SessionDataRepository sessionDataRepository;
@@ -46,23 +47,29 @@ public class CalculatorServiceImpl implements CalculatorService {
                 .updated(null)
                 .build();
         sessionDataRepository.saveAndFlush(session);
+        auditar(session.getId(), "crear sesión", session.getId());
         return uuid;
     }
 
     @Override
     public List<SessionData> getSessionList() {
+        // No se audita por no tener datos.
         return sessionDataRepository.findAll();
     }
 
     @Override
     public SessionData getSessionById(String sessionId) {
+        auditar(sessionId, "consultar sesion", sessionId);
         return getSession(sessionId);
     }
 
     @Override
     public void deleteSession(String sessionId) {
         SessionData sessionData = getSession(sessionId);
+        List<Backlog> allBySession = backlogRepository.findAllBySession(sessionData);
+        backlogRepository.deleteAll(allBySession);
         sessionDataRepository.delete(sessionData);
+        auditar(sessionData.getId(), "eliminar sesión", sessionData.getId());
     }
 
     @Override
@@ -75,6 +82,7 @@ public class CalculatorServiceImpl implements CalculatorService {
         sessionData.setUpdated(LocalDateTime.now());
         backlogRepository.save(backlog);
         sessionDataRepository.save(sessionData);
+        auditar(sessionData.getId(), "agregar operando", String.valueOf(operand));
         return backlog;
     }
 
@@ -84,7 +92,8 @@ public class CalculatorServiceImpl implements CalculatorService {
         List<Backlog> backlogList = backlogRepository.findAllBySession(sessionData);
 
         if (backlogList.isEmpty()) {
-            throw new BacklogNotFoundException("No se encontraron operandos para realizar el calculo para la sesion:" + sessionId);
+            throw new BacklogNotFoundException(
+                    "No se encontraron operandos para realizar el calculo para la sesion:" + sessionId);
         } else if (backlogList.size() == 1) {
             throw new CalculatorException("Debe ingresar por lo menos un operando más para la sesion:" + sessionId);
         }
@@ -128,11 +137,13 @@ public class CalculatorServiceImpl implements CalculatorService {
         } catch (IllegalArgumentException e) {
             throw new CalculatorException("Acción desconocida: " + action);
         }
+        auditar(sessionData.getId(), "realizar calculo: " + action, String.valueOf(resultado));
         return resultado;
     }
 
     private SessionData getSession(String sessionId) {
         return sessionDataRepository.findById(sessionId)
-                .orElseThrow(() -> new SessionNotFoundException("El Id de la session no existe, sessionId:" + sessionId));
+                .orElseThrow(() -> new SessionNotFoundException(
+                        "El Id de la session no existe, sessionId:" + sessionId));
     }
 }
