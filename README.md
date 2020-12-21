@@ -14,3 +14,8 @@ Proyecto de Spring-Boot que exponen endpoints para realizar operaciones aritmét
 
 - http://localhost:8080/swagger-ui.html: Interfaz para realizar peticiones reales.
 - http://localhost:8080/v2/api-docs: detalles sobre el/los endpoints.
+
+## Docker
+Estando dentro de la carpeta donde se encuentra el "Dockerfile":
+- Crear imagen: docker image build -t app-calculator ./
+- Iniciar aplicación: docker run -p 8080:8080 app-calculator
