@@ -9,6 +9,7 @@ import com.neirodiaz.appgate.model.type.Action;
 import com.neirodiaz.appgate.repository.BacklogRepository;
 import com.neirodiaz.appgate.repository.SessionDataRepository;
 import com.neirodiaz.appgate.service.BaseService;
+import com.neirodiaz.appgate.service.BaseServiceImpl;
 import com.neirodiaz.appgate.service.CalculatorService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Service
-public class CalculatorServiceImpl extends BaseService implements CalculatorService {
+public class CalculatorServiceImpl extends BaseServiceImpl implements CalculatorService {
 
     @Autowired
     private SessionDataRepository sessionDataRepository;

@@ -6,7 +6,7 @@ import com.neirodiaz.appgate.model.SessionData;
 import java.util.List;
 import java.util.UUID;
 
-public interface CalculatorService {
+public interface CalculatorService extends BaseService {
 
     /**
      * Crea una sesión.

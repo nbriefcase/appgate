@@ -19,3 +19,9 @@ Proyecto de Spring-Boot que exponen endpoints para realizar operaciones aritmét
 Estando dentro de la carpeta donde se encuentra el "Dockerfile":
 - Crear imagen: docker image build -t app-calculator ./
 - Iniciar aplicación: docker run -p 8080:8080 app-calculator
+
+## Auditoria
+
+Para consultar todas las acciones realizadas apartir de una fecha y hora especifica se debe realizar
+en el formato "yyyy-MM-dd HH:mm" por ejemplo:
+- http://localhost:8080/audit/2020-12-20 00:00
