@@ -5,6 +5,8 @@ import com.neirodiaz.appgate.exception.CalculatorException;
 import com.neirodiaz.appgate.exception.SessionNotFoundException;
 import com.neirodiaz.appgate.model.SessionData;
 import com.neirodiaz.appgate.service.CalculatorService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +31,13 @@ public class CalculatorController {
     private CalculatorService service;
 
     @PostMapping("/addOperand")
-    public void addOperand(@RequestParam String sessionId,
-                           @RequestParam Long num) {
+    @ApiOperation(value = "Agregar un operando a la sesión")
+
+    public void addOperand(
+            @ApiParam(name = "sessionId", type = "String", value = "UUID de la sesión a usar", required = true)
+            @RequestParam String sessionId,
+            @ApiParam(name = "num", type = "Long", value = "Operando a ser agregado", required = true)
+            @RequestParam Long num) {
         try {
             service.addOperand(sessionId, (double) num);
         } catch (SessionNotFoundException e) {
@@ -40,8 +47,13 @@ public class CalculatorController {
     }
 
     @GetMapping("/calculate")
-    public Double calculate(@RequestParam String sessionId,
-                            @RequestParam String action) {
+    @ApiOperation(value = "Realiza la operación especificada a la sesión indicada.")
+    public Double calculate(
+            @ApiParam(name = "sessionId", type = "String", value = "UUID de la sesión a usar", required = true)
+            @RequestParam String sessionId,
+            @ApiParam(name = "action", type = "String", value = "suma, resta, multiplicaion, division, potenciacion",
+                    required = true)
+            @RequestParam String action) {
         Double calculate;
         try {
             calculate = service.calculate(sessionId, action);
@@ -53,7 +65,11 @@ public class CalculatorController {
     }
 
     @GetMapping("/Sessions")
-    public List<SessionData> sessionList(@RequestParam(required = false) String sessionId) {
+    @ApiOperation(value = "Lista todas las sesiones creadas.")
+    public List<SessionData> sessionList(
+            @ApiParam(name = "sessionId", type = "String", value = "UUID de la sesión a consultar o vacio para " +
+                    "mostrar todas")
+            @RequestParam(required = false) String sessionId) {
         List<SessionData> result;
         try {
             Optional<String> session = Optional.ofNullable(sessionId);
@@ -71,7 +87,10 @@ public class CalculatorController {
 
     @DeleteMapping("/Sessions")
     @ResponseStatus(value = HttpStatus.OK)
-    public void deleteSession(@RequestParam String sessionId) {
+    @ApiOperation(value = "Elimina la sesión indicada.")
+    public void deleteSession(
+            @ApiParam(name = "sessionId", type = "String", value = "UUID de la sesión a eliminar", required = true)
+            @RequestParam String sessionId) {
         try {
             service.deleteSession(sessionId);
         } catch (SessionNotFoundException e) {
@@ -81,6 +100,7 @@ public class CalculatorController {
     }
 
     @GetMapping("/createSession")
+    @ApiOperation(value = "Genera un nuevo Identificador de sesión.")
     public UUID createSession() {
         return service.createSession();
     }
