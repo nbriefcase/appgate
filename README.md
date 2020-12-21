@@ -25,3 +25,8 @@ Estando dentro de la carpeta donde se encuentra el "Dockerfile":
 Para consultar todas las acciones realizadas apartir de una fecha y hora especifica se debe realizar
 en el formato "yyyy-MM-dd HH:mm" por ejemplo:
 - http://localhost:8080/audit/2020-12-20 00:00
+
+## Notas
+ - Para una alta disponibilidad se pudiera implementar Kubernetes.
+ - Quedaría pendiente la creación del pipeline para Jenkins.
+ - Se está usando una BD en memoria para omitir la implemetación de PostgreSql o MySql.
